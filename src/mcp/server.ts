@@ -1,105 +1,109 @@
 #!/usr/bin/env node
-import { Server } from "@modelcontextprotocol/sdk/server/index.js";
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
+import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
-} from "@modelcontextprotocol/sdk/types.js";
+} from '@modelcontextprotocol/sdk/types.js';
 // RagManager is now used within toolHandler
-import { handleToolCall } from "./toolHandler.js";
-import { startIndexing } from "../indexing/autoIndexer.js"; // Re-import startIndexing
+import { handleToolCall } from './toolHandler.js';
+import { startIndexing } from '../indexing/autoIndexer.js'; // Re-import startIndexing
 
 const server = new Server(
   {
-    name: "rag-server",
-    version: "1.0.0",
+    name: 'rag-server',
+    version: '1.0.0',
   },
   {
     capabilities: {
       tools: {},
     },
-  }
+  },
 );
 
-server.setRequestHandler(ListToolsRequestSchema, async () => {
+server.setRequestHandler(ListToolsRequestSchema, () => { // Removed async
   return {
     tools: [
       {
-        name: "index_documents",
-        description: "Add documents from specified path for RAG Indexing",
+        name: 'index_documents',
+        description: 'Add documents from specified path for RAG Indexing',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             path: {
-              type: "string",
-              description: "Path containing files/directories to index (relative to CWD)",
+              type: 'string',
+              description:
+                'Path containing files/directories to index (relative to CWD)',
             },
             // projectId removed - server operates on its CWD
           },
-          required: ["path"],
+          required: ['path'],
         },
       },
       {
-        name: "query_documents",
-        description: "Query indexed documents using RAG",
+        name: 'query_documents',
+        description: 'Query indexed documents using RAG',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             query: {
-              type: "string",
-              description: "The question to search documents for",
+              type: 'string',
+              description: 'The question to search documents for',
             },
             // projectId removed
             k: {
-              type: "number",
-              description: "Number of chunks to return (default: 15)",
+              type: 'number',
+              description: 'Number of chunks to return (default: 15)',
             },
             filter: {
-              type: "object",
-              description: "Optional metadata filter (e.g., {\"contentType\": \"code\"})",
+              type: 'object',
+              description:
+                'Optional metadata filter (e.g., {"contentType": "code"})',
               additionalProperties: true,
             },
           },
-          required: ["query"], // Only query is required now
+          required: ['query'], // Only query is required now
         },
       },
       {
-        name: "remove_document",
-        description: "Remove a specific document from the index by file path",
+        name: 'remove_document',
+        description: 'Remove a specific document from the index by file path',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             path: {
-              type: "string",
-              description: "Source path of the document/file to remove (relative to CWD)",
+              type: 'string',
+              description:
+                'Source path of the document/file to remove (relative to CWD)',
             },
             // projectId removed
           },
-          required: ["path"],
+          required: ['path'],
         },
       },
       {
-        name: "remove_all_documents",
-        description: "Remove all documents from the index",
+        name: 'remove_all_documents',
+        description: 'Remove all documents from the index',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
             // projectId removed - operates on the current CWD's index
             confirm: {
-              type: "boolean",
-              description: "Confirmation flag (must be true) to remove all indexed data for this project (CWD)",
+              type: 'boolean',
+              description:
+                'Confirmation flag (must be true) to remove all indexed data for this project (CWD)',
             },
           },
-          required: ["confirm"],
+          required: ['confirm'],
         },
       },
       {
-        name: "list_documents",
-        description: "List all document paths in the index",
+        name: 'list_documents',
+        description: 'List all document paths in the index',
         inputSchema: {
-          type: "object",
+          type: 'object',
           properties: {
-             // projectId removed - lists documents for the current CWD's index
+            // projectId removed - lists documents for the current CWD's index
           },
           // No required properties anymore
         },
@@ -115,33 +119,41 @@ async function main() {
   try {
     // Restore auto-indexing logic
     // Check environment variable to control auto-indexing (default to true if not set)
-    const shouldAutoIndex = process.env.INDEX_PROJECT_ON_STARTUP !== 'false';
+    const shouldAutoIndex = process.env['INDEX_PROJECT_ON_STARTUP'] !== 'false'; // Use bracket notation
 
     if (shouldAutoIndex) {
       // Start indexing in the background, do not await
-      startIndexing().catch((err: unknown) => { // Add type annotation for err
-        console.error("[Server Startup] Background indexing failed:", err);
+      startIndexing().catch((err: unknown) => {
+        // Add type annotation for err
+        console.error('[Server Startup] Background indexing failed:', err);
         // Decide if this should be a fatal error for the server?
         // For now, just log it and let the server continue.
       });
     } else {
-      console.log("[Server Startup] Automatic project indexing is disabled via INDEX_PROJECT_ON_STARTUP=false.");
+      console.log(
+        '[Server Startup] Automatic project indexing is disabled via INDEX_PROJECT_ON_STARTUP=false.',
+      );
     }
 
     const transport = new StdioServerTransport();
     await server.connect(transport);
-    console.info("RAG MCP Server running on stdio");
+    console.info('RAG MCP Server running on stdio');
   } catch (error) {
-    handleFatalError("Error during server initialization:", error);
+    handleFatalError('Error during server initialization:', error);
   }
 }
 
 function handleFatalError(message: string, error: unknown): void {
   console.error(
     message,
-    error instanceof Error ? error.message : String(error)
+    error instanceof Error ? error.message : String(error),
   );
   process.exit(1);
 }
 
-main();
+// Wrap the main execution in an IIFE to handle potential top-level errors
+(async () => {
+  await main();
+})().catch((error: unknown) => { // Add : unknown type annotation
+  handleFatalError('Unhandled error in main execution:', error);
+});

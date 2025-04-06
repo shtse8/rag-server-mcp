@@ -24,7 +24,7 @@ services:
 
   # ChromaDB Service
   chromadb:
-    image: chromadb/chroma:latest # Revert back to latest for investigation
+    image: chromadb/chroma:latest # Revert back to latest
     container_name: chromadb
     environment:
       # Optional: Configure ChromaDB settings if needed
@@ -35,7 +35,7 @@ services:
     # Ports are not exposed to the host by default, only accessible by other services in the network
     # Expose port 8000 to the host machine for E2E tests running on the host
     ports:
-      - "8000:8000"
+      - '8000:8000'
     restart: unless-stopped
 
   # Ollama Service
@@ -49,11 +49,11 @@ services:
     # Ports are not exposed to the host by default
     # If you need to access Ollama API directly from your host machine, uncomment:
     ports:
-      - "11434:11434" # Expose port 11434 to the host for E2E tests
+      - '11434:11434' # Expose port 11434 to the host for E2E tests
     restart: unless-stopped
     # Optional: Command to pull a specific model on startup
     # command: ["sh", "-c", "ollama serve & ollama pull nomic-embed-text && wait"] # Remove command causing restart loop
 
 volumes:
   chromadb_data: # Define the named volume for ChromaDB
-  ollama_data:   # Define the named volume for Ollama
+  ollama_data: # Define the named volume for Ollama

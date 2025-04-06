@@ -1,399 +1,97 @@
-# mcp-rag-server - RAG MCP Server
+# MCP RAG Server
 
-[![NPM Version](https://img.shields.io/npm/v/mcp-rag-server.svg)](https://www.npmjs.com/package/mcp-rag-server)
-[![License](https://img.shields.io/npm/l/mcp-rag-server.svg)](LICENSE)
+<!-- Badges -->
+[![NPM Version](https://img.shields.io/npm/v/mcp-rag-server.svg)](https://www.npmjs.com/package/mcp-rag-server) <!-- TODO: Update package name if published -->
+[![License](https://img.shields.io/npm/l/mcp-rag-server.svg)](LICENSE) <!-- TODO: Update package name if published -->
+[![CI Status](https://github.com/shtse8/rag-server-mcp/actions/workflows/typescript-ci.yml/badge.svg)](https://github.com/shtse8/rag-server-mcp/actions/workflows/typescript-ci.yml)
+<!-- [![Coverage Status](https://coveralls.io/repos/github/shtse8/rag-server-mcp/badge.svg?branch=main)](https://coveralls.io/github/shtse8/rag-server-mcp?branch=main) --> <!-- TODO: Add coverage badge once setup -->
 
-mcp-rag-server is a Model Context Protocol (MCP) server that enables Retrieval Augmented Generation (RAG) capabilities. It empowers Large Language Models (LLMs) to answer questions based on your document content by indexing and retrieving relevant information efficiently.
+**mcp-rag-server** is a [Model Context Protocol (MCP)](https://developer.modelcontext.dev/) server that enables Retrieval Augmented Generation (RAG) capabilities for connected LLMs. It indexes documents from your project and provides relevant context to enhance LLM responses.
 
----
+Built with [Google Genkit](https://developer.google.com/genkit), [ChromaDB](https://www.trychroma.com/), and [Ollama](https://ollama.com/).
 
-## Table of Contents
+## Features
 
-- [Overview](#overview)
-- [MCP Server Usage](#mcp-server-usage)
-  - [Basic Configuration](#basic-configuration)
-  - [Advanced Configuration](#advanced-configuration)
-- [Installation](#installation)
-  - [From Source](#from-source)
-- [Available RAG Tools](#available-rag-tools)
-- [How RAG Works](#how-rag-works)
-- [Environment Variables](#environment-variables)
-  - [Default Environment Settings](#default-environment-settings)
-  - [Configuration Examples for Embedding Providers](#configuration-examples-for-embedding-providers)
-- [Integrating with Your Client and AI Agent](#integrating-with-your-client-and-ai-agent)
-  - [Example Chat Conversation](#example-chat-conversation)
-- [Development](#development)
-- [Contributing](#contributing)
-- [License](#license)
+- **Automatic Indexing:** Scans the project directory on startup (configurable) and indexes supported files.
+- **Supported File Types:** `.txt`, `.md`, code files (via generic splitting), `.json`, `.jsonl`, `.csv`. (Code file chunking is basic).
+- **Hierarchical Chunking:** Intelligently chunks Markdown files, separating text and code blocks.
+- **Vector Storage:** Uses ChromaDB for persistent vector storage.
+- **Local Embeddings:** Leverages Ollama for local embedding generation (default: `nomic-embed-text`).
+- **MCP Tools:** Exposes RAG functions as standard MCP tools:
+    - `indexDocuments`: Manually index a file or directory.
+    - `queryDocuments`: Retrieve relevant document chunks for a query.
+    - `removeDocument`: Remove a specific document's chunks by source path.
+    - `removeAllDocuments`: Clear the entire index for the current project.
+    - `listDocuments`: List indexed document source paths.
+- **Dockerized:** Includes a `docker-compose.yml` for easy setup of the server, ChromaDB, and Ollama.
 
----
+## Installation & Usage (Docker Compose - Recommended)
 
-## Overview
-
-mcp-rag-server allows you to seamlessly integrate RAG functionalities into your applications. It works by:
-
-- **Indexing:** Parsing documents and splitting them into manageable chunks.
-- **Embedding:** Generating vector embeddings for each text chunk.
-- **Querying:** Matching query embeddings with stored document chunks to retrieve context.
-
-This enables downstream LLMs (via MCP clients like Claude Desktop) to generate contextually relevant responses.
-
----
-
-## MCP Server Usage
-
-### Basic Configuration
-
-Integrate the server with your MCP client by adding the following to your configuration:
-
-```json
-{
-  "mcpServers": {
-    "rag": {
-      "command": "npx",
-      "args": ["-y", "mcp-rag-server"]
-    }
-  }
-}
-```
-
-> **Note:** Ensure that the required environment variables are set in the environment where your MCP client runs the command.
-
-### Advanced Configuration
-
-For custom settings, including environment variables:
-
-```json
-{
-  "mcpServers": {
-    "rag": {
-      "command": "npx",
-      "args": ["-y", "mcp-rag-server"],
-      "env": {
-        "BASE_LLM_API": "http://localhost:11434/v1",
-        "LLM_API_KEY": "",
-        "EMBEDDING_MODEL": "granite-embedding-278m-multilingual-Q6_K-1743674737397:latest",
-        "VECTOR_STORE_PATH": "/user-dir/vector_store_locate/",
-        "CHUNK_SIZE": "500"
-      }
-    }
-  }
-}
-```
-
-> **Note:** Environment variable configuration via the client depends on its capabilities. System-level environment variables are generally recommended.
-
----
-
-## Installation
-
-### From Source
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/mcp-rag-server.git
-   cd mcp-rag-server
-   ```
-
-2. **Install Dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Build the Project:**
-
-   ```bash
-   npm run build
-   ```
-
-4. **Run the Server:**
-
-   Ensure your environment variables are set, then start the server:
-
-   ```bash
-   npm start
-   ```
-
-
-### Running with Docker Compose (Recommended)
-
-This is the recommended way to run the server along with its dependencies (ChromaDB and Ollama) in isolated containers.
+This method runs the server and its dependencies (ChromaDB, Ollama) in isolated containers.
 
 1.  **Prerequisites:**
-    *   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) (or Docker Engine on Linux).
+    *   Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) or Docker Engine.
+    *   Ensure port `8000` (ChromaDB) and `11434` (Ollama) are free on your host machine, or adjust ports in `docker-compose.yml`.
 
-2.  **Clone the Repository (if not already done):**
-
+2.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/yourusername/mcp-rag-server.git # Replace with actual repo URL
+    git clone https://github.com/shtse8/rag-server-mcp.git
     cd mcp-rag-server
     ```
 
-3.  **Start the Services:**
-
-    From the project root directory, run:
-
+3.  **Start Services:**
     ```bash
-    docker-compose up -d
+    docker-compose up -d --build
     ```
+    *   This builds the server image, downloads ChromaDB and Ollama images, and starts the services.
+    *   The first run might take time to download images and build.
 
-    *   This command will build the `rag-server` image (if not already built), download the official ChromaDB and Ollama images, and start all three services in the background (`-d`).
-    *   The first time you run this, it might take a while to download the images.
-    *   The server will automatically start indexing the project directory on startup (this behavior can be configured via environment variables in `docker-compose.yml`).
-
-4.  **Check Logs (Optional):**
-
+4.  **Pull Embedding Model (First Run):**
+    The default embedding model (`nomic-embed-text`) needs to be pulled into the Ollama container *after* it starts.
     ```bash
-    docker-compose logs -f rag-server
+    docker exec ollama ollama pull nomic-embed-text
     ```
+    *   Wait a few moments after `docker-compose up` before running this. You only need to do this once as the model will be persisted in a Docker volume.
 
-5.  **Stopping the Services:**
+5.  **Integration with MCP Client:**
+    Configure your MCP client (e.g., in VS Code settings or another MCP server) to connect to this server. Since it's running via Docker Compose, you typically don't run it via `npx` directly in the client config. Instead, the client needs to know how to communicate with the running server (which isn't directly exposed by default in this setup, usually communication happens via other means like direct API calls if the server exposed an HTTP interface, or via shared volumes/databases if applicable).
 
-    ```bash
-    docker-compose down
-    ```
+    **Note:** The current setup primarily facilitates RAG via Genkit flows *within* this project or potentially other services within the same Docker network. Direct MCP client integration from an external host requires exposing the server's MCP port from the Docker container.
 
-    This will stop and remove the containers, but the data stored in volumes (ChromaDB data, Ollama models) will persist.
+## Configuration (Environment Variables)
 
----
+Configure the server via environment variables, typically set within the `docker-compose.yml` file for the `rag-server` service:
 
----
+-   **`CHROMA_URL`**: URL of the ChromaDB service. (Default in compose: `http://chromadb:8000`)
+-   **`OLLAMA_HOST`**: URL of the Ollama service. (Default in compose: `http://ollama:11434`)
+-   **`INDEX_PROJECT_ON_STARTUP`**: Set to `true` (default) or `false` to enable/disable automatic indexing on server start.
+-   **`INDEXING_EXCLUDE_PATTERNS`**: Comma-separated list of glob patterns to exclude from indexing (e.g., `**/node_modules/**,**/.git/**`). Defaults are defined in `autoIndexer.ts`.
+-   **`GENKIT_ENV`**: Set to `production` or `development` (influences logging, etc.).
+-   **`LOG_LEVEL`**: Set log level (e.g., `debug`, `info`, `warn`, `error`).
 
-## Available RAG Tools
-
-The server provides the following operations accessible via MCP:
-
-- **index_documents:**  
-  Index documents from a directory or a single file.  
-  _Supported file types:_ `.txt`, `.md`, `.json`, `.jsonl`, `.csv`
-
-- **query_documents:**  
-  Retrieve context by querying the indexed documents using RAG.
-
-- **remove_document:**  
-  Delete a specific document from the index by its path.
-
-- **remove_all_documents:**  
-  Clear the entire document index (_confirmation required_).
-
-- **list_documents:**  
-  Display all indexed document paths.
-
----
-
-## How RAG Works
-
-The RAG process in the server consists of the following steps:
-
-1. **Indexing:**  
-   The `index_documents` tool accepts a file or directory path to begin processing.
-
-2. **Chunking & Embedding:**  
-   The server splits documents into chunks (configurable via `CHUNK_SIZE`) and generates vector embeddings using the specified `EMBEDDING_MODEL` via the `BASE_LLM_API`.
-
-3. **Storing:**  
-   The embeddings and chunks are stored in a local vector database at the path specified by `VECTOR_STORE_PATH`.
-
-4. **Querying:**  
-   When `query_documents` is called, the server generates an embedding for your query.
-
-5. **Searching:**  
-   It retrieves the top `k` document chunks that match the query.
-
-6. **Contextualization:**  
-   The retrieved chunks are returned as context to your LLM, which then generates a final answer.
-
-```mermaid
-flowchart LR
-    A[User provides document path via index_documents] --> B(RAG Server Reads & Chunks Docs)
-    B --> C{Generate Embeddings via LLM API}
-    C --> D[Store Embeddings & Chunks in Vector DB]
-    E[User asks question via query_documents] --> F{Generate Query Embedding}
-    F --> G{Search Vector DB}
-    G -- Top k Chunks --> H[Return Context to User/Client]
-    H --> I(Client/LLM Generates Final Answer)
-```
-
----
-
-## Environment Variables
-
-The server relies on several environment variables. These can be set at the system level or passed via your MCP client configuration.
-
-### Default Environment Settings
-
-If not explicitly set, the following defaults from the code will be used:
-
-- **`BASE_LLM_API`** (Required)  
-  The base URL for the embedding API endpoint.  
-  **Default:** `http://localhost:11434/v1`
-
-- **`LLM_API_KEY`** (Optional)  
-  API key for the embedding service (if required).  
-  **Default:** `""` (empty string)
-
-- **`EMBEDDING_MODEL`** (Required)  
-  The embedding model to use with the API.  
-  **Default:** `granite-embedding-278m-multilingual-Q6_K-1743674737397:latest`
-
-- **`VECTOR_STORE_PATH`** (Optional)  
-  The directory path for storing the vector database.  
-  **Default:** `./vector_store`
-
-- **`CHUNK_SIZE`** (Optional)  
-  The target size (in characters) for splitting documents into chunks.  
-  **Default:** `500`
-
-### Configuration Examples for Embedding Providers
-
-#### 1. Ollama (Local)
-
-- **Setup:**
-  - Ensure Ollama is running and the desired model is pulled (e.g., `ollama pull nomic-embed-text`).
-- **Variables:**
-  ```bash
-  BASE_LLM_API=http://localhost:11434/v1
-  LLM_API_KEY=
-  EMBEDDING_MODEL=nomic-embed-text
-  ```
-
-#### 2. LM Studio (Local)
-
-- **Setup:**
-  - Start the LM Studio server and load an embedding model.
-- **Variables:**
-  ```bash
-  BASE_LLM_API=http://localhost:1234/v1
-  LLM_API_KEY=
-  EMBEDDING_MODEL=lm-studio-model
-  ```
-
-#### 3. OpenAI API
-
-- **Setup:**
-  - Use your OpenAI credentials.
-- **Variables:**
-  ```bash
-  BASE_LLM_API=https://api.openai.com/v1
-  LLM_API_KEY=YOUR_OPENAI_API_KEY
-  EMBEDDING_MODEL=text-embedding-ada-002
-  ```
-
-#### 4. OpenRouter
-
-- **Setup:**
-  - Use your OpenRouter API key.
-- **Variables:**
-  ```bash
-  BASE_LLM_API=https://openrouter.ai/api/v1
-  LLM_API_KEY=YOUR_OPENROUTER_API_KEY
-  EMBEDDING_MODEL=openai/text-embedding-ada-002
-  ```
-
-#### 5. Google Gemini (via OpenAI Compatibility Endpoint)
-
-- **Setup:**
-  - Follow Google’s instructions to enable the compatibility endpoint.
-- **Variables:**
-  ```bash
-  BASE_LLM_API=https://generativelanguage.googleapis.com/v1beta
-  LLM_API_KEY=YOUR_GEMINI_API_KEY
-  EMBEDDING_MODEL=embedding-001
-  ```
-
-> **Important:** Always refer to your provider’s documentation for precise API endpoints, model names, and authentication requirements.
-
----
-
-## Integrating with Your Client and AI Agent
-
-After setting up the MCP server, integrate it with your client (or AI agent) so that it can leverage RAG operations seamlessly.
-
-### Configuring Your MCP Client
-
-Ensure your client configuration includes the RAG server as shown below:
-
-```json
-{
-  "mcpServers": {
-    "rag": {
-      "command": "npx",
-      "args": ["-y", "mcp-rag-server"],
-      "env": {
-        "BASE_LLM_API": "http://localhost:11434/v1",
-        "LLM_API_KEY": "",
-        "EMBEDDING_MODEL": "granite-embedding-278m-multilingual-Q6_K-1743674737397:latest",
-        "VECTOR_STORE_PATH": "./vector_store",
-        "CHUNK_SIZE": "500"
-      }
-    }
-  }
-}
-```
-
-### Example Chat Conversation
-
-Below is an example conversation that demonstrates how an AI agent might instruct the MCP server to index documents and query the indexed documents:
-
-**User:**  
-Hey, can you add my documents for indexing? I have them stored in `/data/docs`.
-
-**AI Agent:**  
-Sure, let me index the documents from `/data/docs` now.
-
-_([Tool Call]: The agent issues an "index_documents" command with the path `/data/docs`.)_
-
-**AI Agent (after processing):**  
-The documents have been successfully indexed.
-
----
-
-**User:**  
-Great! Now, could you help me find out what the main topics are in our latest report?
-
-**AI Agent:**  
-Okay, I'll query the indexed documents to retrieve context related to your report.
-
-_([Tool Call]: The agent issues a "query_documents" command with the query "What are the main topics in our latest report?")_
-
-**AI Agent (after processing):**  
-I found some relevant context from your documents. Based on the retrieved information, the main topics include market trends, customer feedback, and upcoming product features.
-
----
+*(See `docker-compose.yml` and `src/config/genkit.ts` for more details)*
 
 ## Development
 
-### Prerequisites
-
-- Node.js (see `package.json` for version requirements)
-- npm
-
-### Building
-
-```bash
-npm run build
-```
-
-### Testing
-
-_To be implemented:_
-
-```bash
-# npm test
-```
-
----
+1.  **Prerequisites:** Node.js (LTS), npm.
+2.  **Install Dependencies:** `npm install`
+3.  **Build:** `npm run build`
+4.  **Run Linters/Formatters:**
+    *   `npm run lint`
+    *   `npm run format`
+    *   `npm run validate` (runs format check, lint, typecheck, tests)
+5.  **Run Tests:**
+    *   `npm test` (runs unit tests)
+    *   `npm run test:cov` (runs unit tests with coverage)
+    *   **E2E Tests:** Require Docker Compose environment running (`docker-compose up -d`). Run specific E2E tests via Vitest commands or potentially integrate into `npm test`. *(Note: E2E tests are currently failing due to external service interaction issues).*
+6.  **Run Server Locally (without Docker):**
+    *   Ensure ChromaDB and Ollama are running and accessible (e.g., locally installed or separate Docker containers).
+    *   Set environment variables (`CHROMA_URL`, `OLLAMA_HOST`).
+    *   `npm start`
 
 ## Contributing
 
-Contributions are welcome! If you wish to propose changes or add features, please:
-
-- Open an issue for discussion before submitting a pull request.
-- Follow the code style and commit guidelines provided in the repository.
-
----
+Contributions are welcome! Please open an issue to discuss changes before submitting a pull request. Follow coding standards and commit conventions.
 
 ## License
 

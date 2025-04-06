@@ -1,13 +1,12 @@
-import { genkit } from 'genkit'; // Remove GenkitConfig type
+// Remove GenkitConfig type
 import { ollama } from 'genkitx-ollama';
-import { chroma, chromaIndexerRef, chromaRetrieverRef } from 'genkitx-chromadb'; // Corrected import names
+import { chroma } from 'genkitx-chromadb'; // Corrected import names
 import { UNIFIED_COLLECTION_NAME } from '../indexing/autoIndexer.js'; // Import the unified name
 // Remove devLocalVectorstore import
 // import { devLocalVectorstore } from '@genkit-ai/dev-local-vectorstore';
 
 // Define the embedder model reference (can be shared)
 const embedderRef = 'ollama/nomic-embed-text';
-
 
 // Define the configuration object (TypeScript will infer the type)
 const config = {
@@ -27,7 +26,7 @@ const config = {
         embedder: embedderRef, // Specify the embedder (same as before)
         // Optional: Specify ChromaDB address if not default localhost:8000
         // clientParams: { path: 'http://localhost:8000' },
-      }
+      },
     ]),
   ],
   // Flow state and trace stores (optional, defaults to in-memory)

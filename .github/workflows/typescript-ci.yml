@@ -1,0 +1,96 @@
+name: TypeScript CI/CD
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+
+# Prevent concurrent runs for the same PR or branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Validate Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*' # Use latest LTS Node.js version
+          cache: 'npm' # Use npm for caching
+
+      - name: Install dependencies
+        run: npm ci # Use ci for faster, deterministic installs
+
+      - name: Check formatting
+        run: npm run check-format
+
+      - name: Lint code
+        run: npm run lint
+
+      - name: Perform type checking
+        run: npm run typecheck # Assuming you have this script (tsc --noEmit)
+
+      - name: Run tests with coverage
+        run: npm run test:cov
+
+      # Optional: Upload coverage to Coveralls or Codecov
+      # - name: Upload coverage to Coveralls
+      #   uses: coverallsapp/github-action@v2
+      #   with:
+      #     github-token: ${{ secrets.GITHUB_TOKEN }}
+      #     path-to-lcov: ./coverage/lcov.info # Verify path
+      #     flag-name: run-${{ matrix.node-version }} # Adjust if using matrix
+      #     parallel: false # Set to true if running in parallel matrix
+
+  # Optional: Job to finish Coveralls reporting if using parallel jobs
+  # coveralls_finish:
+  #   needs: validate
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - name: Coveralls Finished
+  #     uses: coverallsapp/github-action@v2
+  #     with:
+  #       github-token: ${{ secrets.GITHUB_TOKEN }}
+  #       parallel-finished: true
+
+  publish:
+    name: Publish Package
+    needs: validate
+    # Only run on tagged commits 'v*.*.*' on the main branch
+    if: startsWith(github.ref, 'refs/tags/v') && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write # Required for trusted publishing to NPM
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 'lts/*'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build package
+        run: npm run build
+
+      - name: Publish to NPM
+        run: npm publish --access public # Or --access restricted for private
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }} # Use token for publishing
+          # For trusted publishing (preferred):
+          # npm config set //registry.npmjs.org/:_authToken $NODE_AUTH_TOKEN
+          # npm publish --provenance --access public
