@@ -1,14 +1,31 @@
 # MCP RAG Server
 
 <!-- Badges -->
-[![NPM Version](https://img.shields.io/npm/v/mcp-rag-server.svg)](https://www.npmjs.com/package/mcp-rag-server) <!-- TODO: Update package name if published -->
-[![License](https://img.shields.io/npm/l/mcp-rag-server.svg)](LICENSE) <!-- TODO: Update package name if published -->
-[![CI Status](https://github.com/shtse8/rag-server-mcp/actions/workflows/typescript-ci.yml/badge.svg)](https://github.com/shtse8/rag-server-mcp/actions/workflows/typescript-ci.yml)
-<!-- [![Coverage Status](https://coveralls.io/repos/github/shtse8/rag-server-mcp/badge.svg?branch=main)](https://coveralls.io/github/shtse8/rag-server-mcp?branch=main) --> <!-- TODO: Add coverage badge once setup -->
+[![NPM Version](https://img.shields.io/npm/v/@sylphlab/mcp-rag-server.svg)](https://www.npmjs.com/package/@sylphlab/mcp-rag-server)
+[![License](https://img.shields.io/npm/l/@sylphlab/mcp-rag-server.svg)](LICENSE)
+[![CI Status](https://github.com/sylphlab/rag-server-mcp/actions/workflows/typescript-ci.yml/badge.svg)](https://github.com/sylphlab/rag-server-mcp/actions/workflows/typescript-ci.yml)
+<!-- [![Coverage Status](https://coveralls.io/repos/github/sylphlab/rag-server-mcp/badge.svg?branch=main)](https://coveralls.io/github/sylphlab/rag-server-mcp?branch=main) --> <!-- TODO: Add coverage badge once setup -->
 
 **mcp-rag-server** is a [Model Context Protocol (MCP)](https://developer.modelcontext.dev/) server that enables Retrieval Augmented Generation (RAG) capabilities for connected LLMs. It indexes documents from your project and provides relevant context to enhance LLM responses.
 
 Built with [Google Genkit](https://developer.google.com/genkit), [ChromaDB](https://www.trychroma.com/), and [Ollama](https://ollama.com/).
+
+
+## Quick Start
+
+(Provide a minimal runnable example here, assuming Docker setup is complete)
+
+```bash
+# Example: Querying via an MCP client (conceptual)
+# (Actual usage depends on the client implementation)
+```
+
+## Why Choose This Project?
+
+- **Seamless MCP Integration:** Designed specifically for the Model Context Protocol ecosystem.
+- **Local Control:** Leverages local models (Ollama) and vector stores (ChromaDB) for privacy and customization.
+- **Automatic Context:** Indexes your project files automatically to provide relevant context to LLMs.
+- **Extensible:** Built with Genkit, allowing for potential future extensions and integrations.
 
 ## Features
 
@@ -25,6 +42,13 @@ Built with [Google Genkit](https://developer.google.com/genkit), [ChromaDB](http
     - `listDocuments`: List indexed document source paths.
 - **Dockerized:** Includes a `docker-compose.yml` for easy setup of the server, ChromaDB, and Ollama.
 
+
+## Design Philosophy
+
+- **Simplicity:** Aims for a straightforward setup and usage experience, especially with Docker Compose.
+- **Modularity:** Leverages Genkit flows for organizing RAG logic.
+- **Local-First:** Prioritizes local tools like Ollama and ChromaDB for core functionality.
+
 ## Installation & Usage (Docker Compose - Recommended)
 
 This method runs the server and its dependencies (ChromaDB, Ollama) in isolated containers.
@@ -35,7 +59,7 @@ This method runs the server and its dependencies (ChromaDB, Ollama) in isolated 
 
 2.  **Clone the Repository:**
     ```bash
-    git clone https://github.com/shtse8/rag-server-mcp.git
+    git clone https://github.com/sylphlab/rag-server-mcp.git
     cd mcp-rag-server
     ```
 
@@ -71,6 +95,23 @@ Configure the server via environment variables, typically set within the `docker
 
 *(See `docker-compose.yml` and `src/config/genkit.ts` for more details)*
 
+
+## Performance
+
+(Performance benchmarks are not yet available.)
+
+## Comparison with Other Solutions
+
+(Comparison with other RAG solutions will be added later.)
+
+## Future Plans
+
+- Improve code file chunking strategies.
+- Add support for more file types (e.g., PDF).
+- Enhance filtering capabilities for queries.
+- Investigate and resolve E2E test failures.
+- Add more robust error handling.
+
 ## Development
 
 1.  **Prerequisites:** Node.js (LTS), npm.
@@ -88,6 +129,11 @@ Configure the server via environment variables, typically set within the `docker
     *   Ensure ChromaDB and Ollama are running and accessible (e.g., locally installed or separate Docker containers).
     *   Set environment variables (`CHROMA_URL`, `OLLAMA_HOST`).
     *   `npm start`
+
+
+## Documentation
+
+Full documentation is available at [TODO: Add link to deployed VitePress site].
 
 ## Contributing
 

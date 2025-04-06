@@ -41,19 +41,20 @@ jobs:
       - name: Run tests with coverage
         run: npm run test:cov
 
-      # Optional: Upload coverage to Coveralls or Codecov
-      # - name: Upload coverage to Coveralls
-      #   uses: coverallsapp/github-action@v2
-      #   with:
-      #     github-token: ${{ secrets.GITHUB_TOKEN }}
-      #     path-to-lcov: ./coverage/lcov.info # Verify path
-      #     flag-name: run-${{ matrix.node-version }} # Adjust if using matrix
-      #     parallel: false # Set to true if running in parallel matrix
+      - name: Upload coverage to Coveralls
+        uses: coverallsapp/github-action@v2
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          path-to-lcov: ./coverage/lcov.info # Verify path is correct
+          flag-name: run-${{ github.run_id }} # Unique flag per run
+          parallel: false # Set to true if using matrix strategy
 
-  # Optional: Job to finish Coveralls reporting if using parallel jobs
+  # Optional: Job to finish Coveralls reporting if using parallel jobs (keep commented unless needed)
   # coveralls_finish:
-  #   needs: validate
+  #   name: Finalize Coveralls Report
+  #   needs: validate # Ensure validation job completes first
   #   runs-on: ubuntu-latest
+  #   if: always() # Run even if previous jobs fail, to finalize parallel runs
   #   steps:
   #   - name: Coveralls Finished
   #     uses: coverallsapp/github-action@v2

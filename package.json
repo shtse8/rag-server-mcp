@@ -1,11 +1,11 @@
 {
-  "name": "mcp-rag-server",
+  "name": "@sylphlab/mcp-rag-server",
   "version": "0.0.9",
   "description": "MCP server for enabling RAG",
   "license": "MIT",
   "author": "Quan Le (Kwan96)",
-  "homepage": "https://github.com/shtse8/rag-server-mcp",
-  "bugs": "https://github.com/shtse8/rag-server-mcp/issues",
+  "homepage": "https://github.com/sylphlab/rag-server-mcp",
+  "bugs": "https://github.com/sylphlab/rag-server-mcp/issues",
   "type": "module",
   "bin": {
     "mcp-rag-server": "dist/src/mcp/server.js"

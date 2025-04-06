@@ -25,9 +25,9 @@ export default defineConfig({
           text: 'Guide',
           items: [
             { text: 'Introduction', link: '/guide/introduction' },
+            { text: 'Installation', link: '/guide/installation' },
+            { text: 'Getting Started', link: '/guide/getting-started' },
             // Add more guide pages later
-            // { text: 'Installation', link: '/guide/installation' },
-            // { text: 'Quick Start', link: '/guide/getting-started' },
           ],
         },
       ],
@@ -39,17 +39,17 @@ export default defineConfig({
     },
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/shtse8/rag-server-mcp' },
+      { icon: 'github', link: 'https://github.com/sylphlab/rag-server-mcp' },
     ],
 
     editLink: {
-      pattern: 'https://github.com/shtse8/rag-server-mcp/edit/main/docs/:path',
+      pattern: 'https://github.com/sylphlab/rag-server-mcp/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
 
     footer: {
       message: 'Released under the MIT License.',
-      copyright: `Copyright © ${new Date().getFullYear()} Quan Le (Kwan96)`,
+      copyright: `Copyright © ${new Date().getFullYear()} Sylph Lab`, // Updated owner name
     },
 
     // Optional: Algolia search

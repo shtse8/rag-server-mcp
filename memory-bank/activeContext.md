@@ -1,4 +1,4 @@
-<!-- Version: 1.3 | Last Updated: 2025-06-06 -->
+<!-- Version: 1.5 | Last Updated: 2025-06-06 -->
 
 # Active Context
 
@@ -19,6 +19,7 @@
     *   Refactored `indexTestFileContent` helper to use `ai` instance from `beforeAll`.
     *   Fixed TypeScript/ESLint errors related to mocking and variable scopes.
 
+    6.  Updated `package.json` and `README.md` to reflect transfer to `sylphlab` owner.\n
 **Blocking Issues (E2E Tests):**
 1.  **ChromaDB `Unimplemented` Error:** Persists when flows interact with ChromaDB via `genkitx-chromadb` (e.g., indexing, deleting), despite direct client calls (`listCollections`, `get`) working. Suggests potential incompatibility between `genkitx-chromadb@1.5.0`, `chromadb@1.8.1` client, and `chromadb/chroma:latest` service, or a bug within the plugin's interaction logic.
 2.  **Ollama `Unable to resolve embedder` Error:** Persists in E2E tests requiring query embedding, despite model pull and corrected initialization. Suggests potential instability in Genkit/Ollama initialization or state management within the Vitest E2E environment.
@@ -26,9 +27,9 @@
 **Next Steps:**
 1.  **Update Progress:** Reflect the current state (passing unit tests, blocked E2E tests) in `progress.md`.
 2.  **Pause E2E Fixes:** Temporarily halt efforts to fix E2E tests due to the complex nature of the plugin/environment issues. Further investigation (e.g., checking plugin issue trackers) is needed.
-3.  **Continue Project Organization:** Proceed with other tasks from the guidelines:
-    *   Set up VitePress documentation.
-    *   Implement CI/CD workflow (`ci.yml`).
-    *   Update `README.md`.
-    *   Review code for LoC limits (e.g., `src/rag/flows.ts`).
-4.  **Commit Progress:** Commit the current state (passing unit tests, updated configs).
+3.  **Project Organization Tasks Completed:**
+        *   Set up basic VitePress documentation structure and configuration.
+        *   Updated CI/CD workflow (`ci.yml`) with Coveralls integration.
+        *   Updated `README.md` structure and content according to guidelines.
+        *   Reviewed `src/rag/flows.ts` for LoC limits (guidelines met).
+4.  **Next Step:** Commit progress (owner transfer, project organization updates).
