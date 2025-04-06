@@ -12,7 +12,8 @@ export default tseslint.config(
   // Configuration specific to TypeScript files, including type-aware rules
   {
     files: ['**/*.ts'],
-    extends: [ // Use extends to apply recommended and strict type-checked rulesets
+    extends: [
+      // Use extends to apply recommended and strict type-checked rulesets
       ...tseslint.configs.recommendedTypeChecked,
       ...tseslint.configs.strictTypeChecked,
     ],

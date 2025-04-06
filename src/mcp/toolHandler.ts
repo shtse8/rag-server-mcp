@@ -9,10 +9,20 @@ import {
 } from '../rag/flows.js'; // Updated import path
 
 // Define interfaces for tool arguments based on server schema
-interface IndexDocumentsArgs { path: string; }
-interface QueryDocumentsArgs { query: string; k?: number; filter?: Record<string, unknown>; }
-interface RemoveDocumentArgs { path: string; }
-interface RemoveAllDocumentsArgs { confirm: boolean; }
+interface IndexDocumentsArgs {
+  path: string;
+}
+interface QueryDocumentsArgs {
+  query: string;
+  k?: number;
+  filter?: Record<string, unknown>;
+}
+interface RemoveDocumentArgs {
+  path: string;
+}
+interface RemoveAllDocumentsArgs {
+  confirm: boolean;
+}
 // list_documents has no arguments
 
 /**
@@ -42,29 +52,53 @@ export async function handleToolCall(request: CallToolRequest) {
 
   // Helper type guard functions
   function isIndexDocumentsArgs(obj: unknown): obj is IndexDocumentsArgs {
-    return typeof obj === 'object' && obj !== null && 'path' in obj && typeof (obj as IndexDocumentsArgs).path === 'string';
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'path' in obj &&
+      typeof (obj as IndexDocumentsArgs).path === 'string'
+    );
   }
   function isQueryDocumentsArgs(obj: unknown): obj is QueryDocumentsArgs {
-    return typeof obj === 'object' && obj !== null && 'query' in obj && typeof (obj as QueryDocumentsArgs).query === 'string';
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'query' in obj &&
+      typeof (obj as QueryDocumentsArgs).query === 'string'
+    );
     // Note: Optional fields k and filter are not strictly checked here,
     // Zod validation within the flow handles that.
   }
   function isRemoveDocumentArgs(obj: unknown): obj is RemoveDocumentArgs {
-    return typeof obj === 'object' && obj !== null && 'path' in obj && typeof (obj as RemoveDocumentArgs).path === 'string';
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'path' in obj &&
+      typeof (obj as RemoveDocumentArgs).path === 'string'
+    );
   }
-   function isRemoveAllDocumentsArgs(obj: unknown): obj is RemoveAllDocumentsArgs {
-    return typeof obj === 'object' && obj !== null && 'confirm' in obj && typeof (obj as RemoveAllDocumentsArgs).confirm === 'boolean';
+  function isRemoveAllDocumentsArgs(
+    obj: unknown,
+  ): obj is RemoveAllDocumentsArgs {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'confirm' in obj &&
+      typeof (obj as RemoveAllDocumentsArgs).confirm === 'boolean'
+    );
   }
-
 
   try {
     // Use a more specific type for flowResult later if possible, start with unknown
     let flowResult: unknown;
 
     switch (name) {
-      case 'index_documents': { // Add block scope
+      case 'index_documents': {
+        // Add block scope
         if (!isIndexDocumentsArgs(args)) {
-          throw new Error('Invalid arguments for index_documents. Required: { path: string }');
+          throw new Error(
+            'Invalid arguments for index_documents. Required: { path: string }',
+          );
         }
         // Type guard passed, args is now IndexDocumentsArgs
         await indexDocumentsFlow(args);
@@ -80,15 +114,18 @@ export async function handleToolCall(request: CallToolRequest) {
         };
       } // Close block scope for index_documents
 
-      case 'query_documents': { // Add block scope
+      case 'query_documents': {
+        // Add block scope
         if (!isQueryDocumentsArgs(args)) {
-          throw new Error('Invalid arguments for query_documents. Required: { query: string }');
+          throw new Error(
+            'Invalid arguments for query_documents. Required: { query: string }',
+          );
         }
         // Type guard passed, args is now QueryDocumentsArgs
         // Flow returns string, so cast flowResult
         flowResult = await queryDocumentsFlow(args);
         if (typeof flowResult !== 'string') {
-           throw new Error('queryDocumentsFlow did not return a string');
+          throw new Error('queryDocumentsFlow did not return a string');
         }
         return {
           content: [{ type: 'text', text: flowResult }],
@@ -97,7 +134,9 @@ export async function handleToolCall(request: CallToolRequest) {
 
       case 'remove_document': {
         if (!isRemoveDocumentArgs(args)) {
-          throw new Error('Invalid arguments for remove_document. Required: { path: string }');
+          throw new Error(
+            'Invalid arguments for remove_document. Required: { path: string }',
+          );
         }
         // Type guard passed, args is now RemoveDocumentArgs
         await removeDocumentFlow(args);
@@ -113,11 +152,14 @@ export async function handleToolCall(request: CallToolRequest) {
 
       case 'remove_all_documents': {
         if (!isRemoveAllDocumentsArgs(args)) {
-           throw new Error('Invalid arguments for remove_all_documents. Required: { confirm: boolean }');
+          throw new Error(
+            'Invalid arguments for remove_all_documents. Required: { confirm: boolean }',
+          );
         }
         // Type guard passed, args is now RemoveAllDocumentsArgs
         // Confirmation check is now inside the flow, but we can keep a basic check here too
-        if (args.confirm) { // Accessing typed args.confirm directly
+        if (args.confirm) {
+          // Accessing typed args.confirm directly
           await removeAllDocumentsFlow(args);
           return {
             content: [
@@ -145,8 +187,11 @@ export async function handleToolCall(request: CallToolRequest) {
         // Call the listDocumentsFlow (no args needed)
         flowResult = await listDocumentsFlow(); // Assign to flowResult
         // Ensure flowResult is string[] before proceeding
-        if (!Array.isArray(flowResult) || !flowResult.every(item => typeof item === 'string')) {
-            throw new Error('listDocumentsFlow did not return a string array');
+        if (
+          !Array.isArray(flowResult) ||
+          !flowResult.every((item) => typeof item === 'string')
+        ) {
+          throw new Error('listDocumentsFlow did not return a string array');
         }
         const paths = flowResult; // paths is now string[]
         const textResult =

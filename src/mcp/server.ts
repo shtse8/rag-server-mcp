@@ -21,7 +21,8 @@ const server = new Server(
   },
 );
 
-server.setRequestHandler(ListToolsRequestSchema, () => { // Removed async
+server.setRequestHandler(ListToolsRequestSchema, () => {
+  // Removed async
   return {
     tools: [
       {
@@ -154,6 +155,7 @@ function handleFatalError(message: string, error: unknown): void {
 // Wrap the main execution in an IIFE to handle potential top-level errors
 (async () => {
   await main();
-})().catch((error: unknown) => { // Add : unknown type annotation
+})().catch((error: unknown) => {
+  // Add : unknown type annotation
   handleFatalError('Unhandled error in main execution:', error);
 });

@@ -8,10 +8,10 @@ The server is primarily configured using environment variables. If you are using
 
 Key variables:
 
--   `CHROMA_URL`: URL for the ChromaDB service (e.g., `http://chromadb:8000`).
--   `OLLAMA_HOST`: URL for the Ollama service (e.g., `http://ollama:11434`).
--   `INDEX_PROJECT_ON_STARTUP`: `true` or `false` (default: `true`) to control automatic indexing when the server starts.
--   `INDEXING_EXCLUDE_PATTERNS`: Comma-separated glob patterns to exclude files/directories.
+- `CHROMA_URL`: URL for the ChromaDB service (e.g., `http://chromadb:8000`).
+- `OLLAMA_HOST`: URL for the Ollama service (e.g., `http://ollama:11434`).
+- `INDEX_PROJECT_ON_STARTUP`: `true` or `false` (default: `true`) to control automatic indexing when the server starts.
+- `INDEXING_EXCLUDE_PATTERNS`: Comma-separated glob patterns to exclude files/directories.
 
 Refer to the `README.md` for a more comprehensive list.
 
@@ -23,37 +23,42 @@ By default (`INDEX_PROJECT_ON_STARTUP=true`), the server will automatically scan
 
 Once the server is running and connected to your MCP client (like the VS Code extension), you can use the provided tools:
 
--   **`queryDocuments`**:
-    -   **Input:** `query` (string), `k` (number, optional, default: 5), `filter` (object, optional, e.g., `{ contentType: 'markdown' }`)
-    -   **Output:** An array of relevant document chunks based on your query.
-    ```json
-    // Example MCP client request
-    {
-      "tool": "queryDocuments",
-      "arguments": {
-        "query": "How does the chunking work?",
-        "k": 3
-      }
+- **`queryDocuments`**:
+
+  - **Input:** `query` (string), `k` (number, optional, default: 5), `filter` (object, optional, e.g., `{ contentType: 'markdown' }`)
+  - **Output:** An array of relevant document chunks based on your query.
+
+  ```json
+  // Example MCP client request
+  {
+    "tool": "queryDocuments",
+    "arguments": {
+      "query": "How does the chunking work?",
+      "k": 3
     }
-    ```
+  }
+  ```
 
--   **`indexDocuments`**: (Manual indexing)
-    -   **Input:** `path` (string, relative path to file or directory)
-    -   **Output:** Status message.
+- **`indexDocuments`**: (Manual indexing)
 
--   **`listDocuments`**:
-    -   **Input:** None
-    -   **Output:** Array of indexed source file paths.
+  - **Input:** `path` (string, relative path to file or directory)
+  - **Output:** Status message.
 
--   **`removeDocument`**:
-    -   **Input:** `path` (string, relative path of the document to remove)
-    -   **Output:** Status message.
+- **`listDocuments`**:
 
--   **`removeAllDocuments`**:
-    -   **Input:** None
-    -   **Output:** Status message.
+  - **Input:** None
+  - **Output:** Array of indexed source file paths.
+
+- **`removeDocument`**:
+
+  - **Input:** `path` (string, relative path of the document to remove)
+  - **Output:** Status message.
+
+- **`removeAllDocuments`**:
+  - **Input:** None
+  - **Output:** Status message.
 
 ## Next Steps
 
--   Explore the [API Reference](/api/) for detailed tool schemas.
--   Customize the configuration based on your project needs.
+- Explore the [API Reference](/api/) for detailed tool schemas.
+- Customize the configuration based on your project needs.

@@ -35,11 +35,14 @@ async function main() {
     try {
       await mkdir(outputDir, { recursive: true });
       // Add a simple title and intro to the API index page
-      await writeFile(path.join(outputDir, 'index.md'), '# API Reference\n\nThis section contains the auto-generated API documentation.\n\nBrowse the modules and functions using the sidebar.', 'utf-8');
+      await writeFile(
+        path.join(outputDir, 'index.md'),
+        '# API Reference\n\nThis section contains the auto-generated API documentation.\n\nBrowse the modules and functions using the sidebar.',
+        'utf-8',
+      );
     } catch (e) {
       console.warn(`Could not create index.md for API docs: ${e}`);
     }
-
   } else {
     console.error('Failed to convert project with TypeDoc.');
     process.exit(1);

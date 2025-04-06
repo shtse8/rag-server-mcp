@@ -4,7 +4,8 @@ import { defineConfig } from 'vitepress';
 export default defineConfig({
   lang: 'en-US',
   title: 'MCP RAG Server',
-  description: 'MCP server providing Retrieval Augmented Generation capabilities.',
+  description:
+    'MCP server providing Retrieval Augmented Generation capabilities.',
   lastUpdated: true,
   cleanUrls: true,
 
@@ -43,7 +44,8 @@ export default defineConfig({
     ],
 
     editLink: {
-      pattern: 'https://github.com/sylphlab/rag-server-mcp/edit/main/docs/:path',
+      pattern:
+        'https://github.com/sylphlab/rag-server-mcp/edit/main/docs/:path',
       text: 'Edit this page on GitHub',
     },
 

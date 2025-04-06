@@ -96,38 +96,48 @@ vi.mock('fs', async (importOriginal) => {
   });
 
   // Define a more specific type for options based on fs.readFileSync signature
-  type ReadFileOptions = BufferEncoding | { encoding?: BufferEncoding | null; flag?: string; } | null;
-  const mockReadFileSyncFn = vi.fn((p: fs.PathLike | number, options?: ReadFileOptions): string => {
-    // Determine encoding, default to utf-8 for string return type
-    const encoding = (typeof options === 'string' ? options : options?.encoding) || 'utf-8';
-    if (encoding !== 'utf-8') {
+  type ReadFileOptions =
+    | BufferEncoding
+    | { encoding?: BufferEncoding | null; flag?: string }
+    | null;
+  const mockReadFileSyncFn = vi.fn(
+    (p: fs.PathLike | number, options?: ReadFileOptions): string => {
+      // Determine encoding, default to utf-8 for string return type
+      const encoding =
+        (typeof options === 'string' ? options : options?.encoding) || 'utf-8';
+      if (encoding !== 'utf-8') {
         // If a different encoding is requested, we'd need to return a Buffer or throw
         // For simplicity, this mock only handles utf-8 and returns strings
         throw new Error('Mock readFileSync only supports utf-8 string return.');
-    }
+      }
 
-    const resolvedP = path.resolve(p.toString());
+      const resolvedP = path.resolve(p.toString());
 
-    // Check if statSync throws (simulating non-existence) *before* checking content
-    try {
+      // Check if statSync throws (simulating non-existence) *before* checking content
+      try {
         mockStatSyncFn(resolvedP); // Will throw if path is not mocked in statSync
-    } catch { // Remove the unused variable entirely
+      } catch {
+        // Remove the unused variable entirely
         // If statSync threw (e.g., ENOENT), rethrow it for readFileSync
         // Construct a new error specific to readFileSync failing due to underlying stat error
-        const readErr = new Error(`Mock readFileSync ENOENT for ${resolvedP} (caused by statSync error)`);
+        const readErr = new Error(
+          `Mock readFileSync ENOENT for ${resolvedP} (caused by statSync error)`,
+        );
         (readErr as NodeJS.ErrnoException).code = 'ENOENT'; // Keep the ENOENT code
         // Optionally chain the original error if needed for debugging, but throwing a new one is cleaner
         throw readErr;
-    }
+      }
 
-    // If statSync didn't throw, provide content or empty string
-    if (resolvedP === path.resolve(TEST_FILE_TXT)) return 'Text content.';
-    if (resolvedP === path.resolve(TEST_FILE_MD)) return '# MD content';
-    if (resolvedP === path.resolve(TEST_FILE_UNSUPPORTED)) return 'Log content.';
+      // If statSync didn't throw, provide content or empty string
+      if (resolvedP === path.resolve(TEST_FILE_TXT)) return 'Text content.';
+      if (resolvedP === path.resolve(TEST_FILE_MD)) return '# MD content';
+      if (resolvedP === path.resolve(TEST_FILE_UNSUPPORTED))
+        return 'Log content.';
 
-    // If path exists (statSync didn't throw) but no specific content is mocked, return empty
-    return '';
-  });
+      // If path exists (statSync didn't throw) but no specific content is mocked, return empty
+      return '';
+    },
+  );
 
   return {
     ...originalFs, // Spread original fs module
@@ -176,7 +186,8 @@ describe('RAG Manager Flows (Genkit)', () => {
   });
 
   // Ensure mocks are reset before each test
-  beforeEach(async () => { // Make beforeEach async
+  beforeEach(async () => {
+    // Make beforeEach async
     // Make beforeEach synchronous again
     vi.clearAllMocks();
     // Explicitly reset the embed mock implementation before each test
@@ -188,15 +199,31 @@ describe('RAG Manager Flows (Genkit)', () => {
     // Initialize mockCollection declared outside
     mockCollection = {
       add: vi.fn().mockResolvedValue(undefined),
-      query: vi.fn().mockResolvedValue({ ids: [[]], embeddings: [[]], documents: [[]], metadatas: [[]] }), // Default mock
-      get: vi.fn().mockResolvedValue({ ids: [], embeddings: [], documents: [], metadatas: [] }),
+      query: vi
+        .fn()
+        .mockResolvedValue({
+          ids: [[]],
+          embeddings: [[]],
+          documents: [[]],
+          metadatas: [[]],
+        }), // Default mock
+      get: vi
+        .fn()
+        .mockResolvedValue({
+          ids: [],
+          embeddings: [],
+          documents: [],
+          metadatas: [],
+        }),
       delete: vi.fn().mockResolvedValue(undefined),
       count: vi.fn().mockResolvedValue(0),
     };
     // Ensure the mock function itself is mocked correctly before assigning resolved value
     // Need to re-import getChromaCollection if it was removed from import statement
     const { getChromaCollection } = await import('../../rag/flows.js');
-    (getChromaCollection as ReturnType<typeof vi.fn>).mockClear().mockResolvedValue(mockCollection);
+    (getChromaCollection as ReturnType<typeof vi.fn>)
+      .mockClear()
+      .mockResolvedValue(mockCollection);
 
     // Reset fs mocks (vi.clearAllMocks should handle mocks created by vi.mock)
   });
@@ -257,10 +284,9 @@ describe('RAG Manager Flows (Genkit)', () => {
       await indexDocumentsFlow({ path: TEST_FILE_TXT });
 
       // Expect absolute path now
-      expect(fs.statSync).toHaveBeenCalledWith(
-        path.resolve(TEST_FILE_TXT),
-      );
-      expect(mockReadFileSyncFile).toHaveBeenCalledWith( // Check the specific spy
+      expect(fs.statSync).toHaveBeenCalledWith(path.resolve(TEST_FILE_TXT));
+      expect(mockReadFileSyncFile).toHaveBeenCalledWith(
+        // Check the specific spy
         path.resolve(TEST_FILE_TXT),
         'utf-8',
       );
@@ -303,7 +329,8 @@ describe('RAG Manager Flows (Genkit)', () => {
       expect(fs.statSync).toHaveBeenCalledWith(
         path.resolve(TEST_FILE_UNSUPPORTED),
       );
-      expect(mockReadFileSyncUns).toHaveBeenCalledWith( // Check the specific spy
+      expect(mockReadFileSyncUns).toHaveBeenCalledWith(
+        // Check the specific spy
         path.resolve(TEST_FILE_UNSUPPORTED),
         'utf-8',
       );
@@ -366,18 +393,27 @@ describe('RAG Manager Flows (Genkit)', () => {
       // Cannot assert result content reliably
     });
 
-    it.skip('should return message when no documents are found', async () => { // Skipping this problematic test for now
+    it.skip('should return message when no documents are found', async () => {
+      // Skipping this problematic test for now
       // console.log('[Test Debug] Running: should return message when no documents are found');
       // mockCollection is now created in beforeEach
 
       // Set the mock's behavior for this test
       // Need access to the mockCollection created in beforeEach
-      mockCollection.query.mockImplementationOnce(() => { // Use mockCollection from beforeEach scope
+      mockCollection.query.mockImplementationOnce(() => {
+        // Use mockCollection from beforeEach scope
         // console.log('[Test Debug] mockCollection.query mockImplementationOnce executed');
-        return { ids: [[]], embeddings: [[]], documents: [[]], metadatas: [[]] };
+        return {
+          ids: [[]],
+          embeddings: [[]],
+          documents: [[]],
+          metadatas: [[]],
+        };
       });
-// Explicitly clear and mock ai.embed *just before* calling the flow
-ai.embed.mockClear().mockResolvedValueOnce([{ embedding: [0.7, 0.8, 0.9] }]);
+      // Explicitly clear and mock ai.embed *just before* calling the flow
+      ai.embed
+        .mockClear()
+        .mockResolvedValueOnce([{ embedding: [0.7, 0.8, 0.9] }]);
 
       const result = await queryDocumentsFlow({ query: 'another query' }); // Keep call
 
@@ -391,16 +427,16 @@ ai.embed.mockClear().mockResolvedValueOnce([{ embedding: [0.7, 0.8, 0.9] }]);
       expect(result).toBe('No relevant documents found in the index.'); // Keep assertion
       // console.log('[Test Debug] Test finished successfully.');
     });
-it('should return error message if retrieve fails (e.g., index not ready)', async () => {
-  // mockCollection is now created in beforeEach
-  // No need to set collection mock behavior as query shouldn't be called
-  // Mock ai.embed to reject for this test case
-  ai.embed.mockRejectedValueOnce(new Error('Embedder failed simulation'));
+    it('should return error message if retrieve fails (e.g., index not ready)', async () => {
+      // mockCollection is now created in beforeEach
+      // No need to set collection mock behavior as query shouldn't be called
+      // Mock ai.embed to reject for this test case
+      ai.embed.mockRejectedValueOnce(new Error('Embedder failed simulation'));
 
       // Expect the flow to reject with the error thrown by the embed mock
-      await expect(queryDocumentsFlow({ query: 'failing query' })).rejects.toThrow(
-        'Embedder failed simulation',
-      ); // Keep assertion
+      await expect(
+        queryDocumentsFlow({ query: 'failing query' }),
+      ).rejects.toThrow('Embedder failed simulation'); // Keep assertion
 
       // Check embed was called
       expect(ai.embed).toHaveBeenCalledWith({

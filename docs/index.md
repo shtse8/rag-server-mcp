@@ -3,8 +3,8 @@
 layout: home
 
 hero:
-  name: "MCP RAG Server"
-  text: "Retrieval Augmented Generation for MCP"
+  name: 'MCP RAG Server'
+  text: 'Retrieval Augmented Generation for MCP'
   tagline: Enhance your MCP-connected LLMs with knowledge from your own documents.
   actions:
     - theme: brand

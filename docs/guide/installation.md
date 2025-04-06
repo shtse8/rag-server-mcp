@@ -13,15 +13,18 @@ This guide explains how to install and set up the MCP RAG Server.
 This is the easiest way to get started, as it manages the server, ChromaDB, and Ollama.
 
 1.  **Clone the repository:**
+
     ```bash
     git clone https://github.com/sylphlab/rag-server-mcp.git
     cd rag-server-mcp
     ```
 
 2.  **Start the services:**
+
     ```bash
     docker-compose up -d --build
     ```
+
     This command builds the server image and starts all necessary services in the background.
 
 3.  **Pull the embedding model (first time only):**
@@ -34,4 +37,4 @@ The server should now be running within the Docker network. Refer to the Getting
 
 ## Manual Installation (Advanced)
 
-*(Details for manual setup without Docker will be added here later.)*
+_(Details for manual setup without Docker will be added here later.)_

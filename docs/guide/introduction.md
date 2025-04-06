@@ -14,9 +14,9 @@ This server bridges the gap between general-purpose LLMs and your specific proje
 
 - **Indexes Your Documents:** It automatically scans your project's working directory (respecting `.gitignore`), chunks the content of supported files (text, markdown, code), generates vector embeddings, and stores them locally using ChromaDB.
 - **Provides MCP Tools:** It exposes tools through the MCP, allowing connected clients (like other MCP servers or development environments) to:
-    - Query the indexed documents.
-    - Retrieve relevant chunks based on a query.
-    - Manage the document index (e.g., list indexed files, remove documents).
+  - Query the indexed documents.
+  - Retrieve relevant chunks based on a query.
+  - Manage the document index (e.g., list indexed files, remove documents).
 - **Enhances LLM Responses:** By providing relevant document snippets as context, LLMs connected via MCP can answer questions about your specific codebase, documentation, or data with much higher accuracy and relevance.
 
 ## Next Steps

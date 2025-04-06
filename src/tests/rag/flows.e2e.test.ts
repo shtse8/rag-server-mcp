@@ -38,7 +38,8 @@ import * as path from 'path';
 // import { randomBytes } from 'crypto'; // Unused import
 
 // --- Test Configuration ---
-const TEST_CHROMA_URL = process.env['TEST_CHROMA_URL'] || 'http://localhost:8000'; // Use bracket notation
+const TEST_CHROMA_URL =
+  process.env['TEST_CHROMA_URL'] || 'http://localhost:8000'; // Use bracket notation
 // Use the same unified collection name as the main application for E2E tests
 // as the flows are hardcoded to use it. Cleanup will target this collection.
 const TEST_COLLECTION_NAME = UNIFIED_COLLECTION_NAME; // Use the unified name directly
@@ -176,26 +177,26 @@ describe('RAG Flows - E2E Tests', () => {
     // Cleanup: Delete the unified test collection
     // chromaClient should exist if beforeAll succeeded, so the check is likely redundant.
     // Assuming chromaClient is available:
-      try {
-        // Check if collection exists before attempting delete, as it might fail if already deleted
-        const collections = await chromaClient.listCollections();
-        // listCollections likely returns string[], check if name is included
-        if (collections.includes(TEST_COLLECTION_NAME)) {
-          await chromaClient.deleteCollection({ name: TEST_COLLECTION_NAME });
-          console.log(
-            `[E2E Test] Deleted test collection: ${TEST_COLLECTION_NAME}`,
-          );
-        } else {
-          console.log(
-            `[E2E Test] Test collection ${TEST_COLLECTION_NAME} not found for deletion (might have been cleared).`,
-          );
-        }
-      } catch (error) {
-        console.error(
-          `[E2E Test Cleanup Error] Failed to delete or check collection ${TEST_COLLECTION_NAME}:`,
-          error,
+    try {
+      // Check if collection exists before attempting delete, as it might fail if already deleted
+      const collections = await chromaClient.listCollections();
+      // listCollections likely returns string[], check if name is included
+      if (collections.includes(TEST_COLLECTION_NAME)) {
+        await chromaClient.deleteCollection({ name: TEST_COLLECTION_NAME });
+        console.log(
+          `[E2E Test] Deleted test collection: ${TEST_COLLECTION_NAME}`,
+        );
+      } else {
+        console.log(
+          `[E2E Test] Test collection ${TEST_COLLECTION_NAME} not found for deletion (might have been cleared).`,
         );
       }
+    } catch (error) {
+      console.error(
+        `[E2E Test Cleanup Error] Failed to delete or check collection ${TEST_COLLECTION_NAME}:`,
+        error,
+      );
+    }
     // Cleanup test files
     await cleanupTestFiles();
   });
@@ -270,7 +271,9 @@ describe('RAG Flows - E2E Tests', () => {
       expect(m?.contentType).toBe('text');
       expect(m?.language).toBeUndefined();
     });
-    console.log(`[E2E Test] Found ${txtChunks.length.toString()} chunks for ${sourceTxt}`); // Use toString()
+    console.log(
+      `[E2E Test] Found ${txtChunks.length.toString()} chunks for ${sourceTxt}`,
+    ); // Use toString()
 
     // 2. Check .md file chunks (should have text and code)
     const mdChunksMeta = metadatas.filter((m) => m?.sourcePath === sourceMd);
@@ -297,7 +300,9 @@ describe('RAG Flows - E2E Tests', () => {
       expect(m?.contentType).toBe('code');
       expect(m?.language).toBe('ts'); // From file extension
     });
-    console.log(`[E2E Test] Found ${tsChunks.length.toString()} chunks for ${sourceTs}`); // Use toString()
+    console.log(
+      `[E2E Test] Found ${tsChunks.length.toString()} chunks for ${sourceTs}`,
+    ); // Use toString()
 
     // 4. Check ignored files (should not be present)
     // This check assumes indexTestFileContent wasn't called for ignored files.
@@ -388,13 +393,23 @@ describe('RAG Flows - E2E Tests', () => {
     // Act: Try direct client interaction first
     let directListResult: string[] = [];
     try {
-      console.log('[E2E Test Debug] Attempting direct chromaClient.listCollections()');
+      console.log(
+        '[E2E Test Debug] Attempting direct chromaClient.listCollections()',
+      );
       const collections = await chromaClient.listCollections();
-      console.log('[E2E Test Debug] Direct listCollections result:', collections);
+      console.log(
+        '[E2E Test Debug] Direct listCollections result:',
+        collections,
+      );
       // Now try getting items from the specific test collection
       console.log('[E2E Test Debug] Attempting direct testCollection.get()');
-      const getResult = await testCollection.get({ include: [IncludeEnum.Metadatas] });
-      console.log('[E2E Test Debug] Direct testCollection.get() result count:', getResult.ids.length);
+      const getResult = await testCollection.get({
+        include: [IncludeEnum.Metadatas],
+      });
+      console.log(
+        '[E2E Test Debug] Direct testCollection.get() result count:',
+        getResult.ids.length,
+      );
       // Extract unique sourcePaths from metadata
       const sourcePaths = new Set<string>();
       getResult.metadatas.forEach((meta) => {
@@ -405,8 +420,10 @@ describe('RAG Flows - E2E Tests', () => {
         }
       });
       directListResult = Array.from(sourcePaths);
-      console.log('[E2E Test Debug] Direct get() unique sourcePaths:', directListResult);
-
+      console.log(
+        '[E2E Test Debug] Direct get() unique sourcePaths:',
+        directListResult,
+      );
     } catch (e) {
       console.error('[E2E Test Debug] Direct client interaction failed:', e);
       // Fallback to testing the flow if direct interaction fails,
@@ -484,8 +501,16 @@ describe('RAG Flows - E2E Tests', () => {
     // Arrange: Index something first
     const path1 = 'test-doc1.txt-removeall-test';
     const path2 = 'test-code1.ts-removeall-test';
-    await indexTestFileContent(path.join(TEST_PROJECT_DIR, 'doc1.txt'), path1, ai);
-    await indexTestFileContent(path.join(TEST_PROJECT_DIR, 'code1.ts'), path2, ai);
+    await indexTestFileContent(
+      path.join(TEST_PROJECT_DIR, 'doc1.txt'),
+      path1,
+      ai,
+    );
+    await indexTestFileContent(
+      path.join(TEST_PROJECT_DIR, 'code1.ts'),
+      path2,
+      ai,
+    );
     await new Promise((resolve) => setTimeout(resolve, 200)); // Delay
 
     const initialPaths = await listDocumentsFlow(); // No projectId needed

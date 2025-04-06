@@ -3,6 +3,7 @@
 # Progress
 
 **Current Status:**
+
 - **Project Organization In Progress:** Actively organizing the project according to the \"TypeScript Project Development Guidelines\".
 - **Configuration Updated:** `package.json`, `tsconfig.json`, `.prettierrc.cjs`, `eslint.config.js`, `vitest.config.ts` created/updated and configured with strict rules and required scripts.
 - **Code Formatting & Linting:** All project files formatted with Prettier. All ESLint errors fixed after enabling strict rules.
@@ -12,6 +13,7 @@
 - **Git History:** Repository history was reset, and project pushed to the new remote `https://github.com/shtse8/rag-server-mcp.git`.
 
 **What Works:**
+
 - Project builds successfully (`npm run build`).
 - Code formatting is consistent (`npm run format`).
 - Code passes strict ESLint checks (`npm run lint`).
@@ -19,6 +21,7 @@
 - Docker Compose setup exists and services (ChromaDB, Ollama) start. Basic ChromaDB client connection works.
 
 **What's Left / Next Steps (Project Organization Task):**
+
 1.  **Investigate E2E Failures (Paused):** Requires deeper investigation into `genkitx-chromadb` and `genkitx-ollama` plugin compatibility/bugs or Vitest E2E environment interactions. Check relevant GitHub issue trackers.
 2.  **Address Skipped Unit Test (Low Priority):** Revisit the `should return message when no documents are found` test if E2E issues provide clues or if further mocking strategies are identified.
 3.  **Documentation (VitePress):** Set up VitePress and write initial documentation according to guidelines.
@@ -28,6 +31,7 @@
 7.  **Commit Changes:** Commit the current progress (passing unit tests, updated configs).
 
 **Known Issues:**
+
 - All E2E tests are failing (`Unimplemented` ChromaDB error via plugin, `Unable to resolve embedder` Ollama error).
 - One unit test is skipped due to mocking difficulties.
 - Code coverage is likely below the 100% target.
