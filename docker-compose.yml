@@ -1,0 +1,59 @@
+version: '3.8' # Specify docker-compose version
+
+services:
+  # RAG MCP Server Service
+  rag-server:
+    build:
+      context: . # Use the Dockerfile in the current directory
+      dockerfile: Dockerfile
+    container_name: rag-mcp-server
+    depends_on:
+      - chromadb
+      # - ollama # Uncomment if server directly depends on Ollama being ready
+    environment:
+      # Configure connection URLs using service names defined below
+      - CHROMA_URL=http://chromadb:8000
+      - OLLAMA_HOST=http://ollama:11434 # Genkit plugins usually use this env var
+      # Add any other environment variables your server needs
+      # e.g., INDEX_PROJECT_ON_STARTUP=true (already default in code)
+      # e.g., INDEX_PROJECT_CODE=true (if you want to index code by default)
+    restart: unless-stopped
+    # If your server needs persistent storage (e.g., logs, local vector store if not using Chroma)
+    # volumes:
+    #   - ./data/server:/app/data # Example volume mount
+
+  # ChromaDB Service
+  chromadb:
+    image: chromadb/chroma:latest # Revert back to latest for investigation
+    container_name: chromadb
+    environment:
+      # Optional: Configure ChromaDB settings if needed
+      - IS_PERSISTENT=TRUE # Enable persistence
+      - ALLOW_RESET=TRUE # Allows resetting the database (useful for testing)
+    volumes:
+      - chromadb_data:/chroma/chroma # Mount a named volume for persistence
+    # Ports are not exposed to the host by default, only accessible by other services in the network
+    # Expose port 8000 to the host machine for E2E tests running on the host
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  # Ollama Service
+  ollama:
+    image: ollama/ollama:latest # Use the official Ollama image
+    container_name: ollama
+    volumes:
+      - ollama_data:/root/.ollama # Mount a named volume for model persistence
+    # If you need GPU support, you might need additional configuration here
+    # See Ollama Docker documentation for GPU setup
+    # Ports are not exposed to the host by default
+    # If you need to access Ollama API directly from your host machine, uncomment:
+    ports:
+      - "11434:11434" # Expose port 11434 to the host for E2E tests
+    restart: unless-stopped
+    # Optional: Command to pull a specific model on startup
+    # command: ["sh", "-c", "ollama serve & ollama pull nomic-embed-text && wait"] # Remove command causing restart loop
+
+volumes:
+  chromadb_data: # Define the named volume for ChromaDB
+  ollama_data:   # Define the named volume for Ollama

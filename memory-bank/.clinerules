@@ -1,0 +1,20 @@
+<!-- Version: 0.2 | Last Updated: 2025-06-04 -->
+
+# Cline Rules
+
+## General
+- **Language:** Respond to user in Cantonese (香港語). All technical content (code, comments, docs, commits) MUST be in English.
+- **Tool Priority:**
+    1. `filesystem-mcp` for file operations.
+    2. `gh` CLI for GitHub operations.
+    3. Windows Batch (`execute_command`) only when necessary.
+- **Memory Bank:** MUST read ALL memory bank files at the start of EVERY task. Update files when context changes or upon request.
+- **Version Control:** Always commit changes to Git.
+- **Code Structure:** Files exceeding 500 LoC MUST be split.
+- **Self-Testing:** Attempt self-testing before asking user.
+- **Context Limit:** Follow context limit management protocol.
+
+## Project Specific (`mcp-rag-server`)
+- **Package Manager:** Use `npm` for package management commands (e.g., `npm install`, `npm run build`).
+- **Environment:** Assumed Node.js/TypeScript environment.
+- **Configuration:** Be mindful of required environment variables for server operation.

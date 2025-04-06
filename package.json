@@ -1,0 +1,56 @@
+{
+  "name": "mcp-rag-server",
+  "version": "0.0.9",
+  "description": "MCP server for enabling RAG",
+  "license": "MIT",
+  "author": "Quan Le (Kwan96)",
+  "homepage": "https://github.com/kwanLeeFrmVi/mcp-rag-server",
+  "bugs": "https://github.com/kwanLeeFrmVi/mcp-rag-server/issues",
+  "type": "module",
+  "bin": {
+    "mcp-rag-server": "dist/src/mcp/server.js"
+  },
+  "files": [
+    "dist/src/mcp",
+    "dist/src/rag",
+    "dist/src/common",
+    "dist/src/config"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/src/mcp/server.js",
+    "prepare": "npm run build",
+    "inspect": "npx @modelcontextprotocol/inspector node dist/src/mcp/server.js",
+    "watch": "tsc --watch",
+    "test": "vitest run --hook-timeout 30000",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.23.0",
+    "@types/better-sqlite3": "^7.6.11",
+    "@types/node": "^20.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.29.0",
+    "@typescript-eslint/parser": "^8.29.0",
+    "@vitest/coverage-v8": "^3.1.1",
+    "eslint": "^9.23.0",
+    "shx": "^0.4.0",
+    "typescript-eslint": "^8.29.0",
+    "vitest": "^3.1.1"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@genkit-ai/dev-local-vectorstore": "^1.5.0",
+    "@genkit-ai/dotprompt": "^0.9.12",
+    "@modelcontextprotocol/sdk": "^1.8.0",
+    "chromadb": "^1.8.1",
+    "genkit": "^1.5.0",
+    "genkitx-chromadb": "^1.5.0",
+    "genkitx-ollama": "^1.5.0",
+    "ignore": "^7.0.3",
+    "zod": "^3.24.2"
+  },
+  "module": "src/mcp/server.ts"
+}
