@@ -1,4 +1,4 @@
-<!-- Version: 1.5 | Last Updated: 2025-06-06 -->
+<!-- Version: 1.6 | Last Updated: 2025-06-06 -->
 
 # Active Context
 
@@ -32,4 +32,7 @@
         *   Updated CI/CD workflow (`ci.yml`) with Coveralls integration.
         *   Updated `README.md` structure and content according to guidelines.
         *   Reviewed `src/rag/flows.ts` for LoC limits (guidelines met).
-4.  **Next Step:** Commit progress (owner transfer, project organization updates).
+4.  **Status:** Commit `6892575` created locally.
+5.  **Next Steps:**
+    *   Push commit to `origin main`.
+    *   Prepare and release new version (v0.0.10).
